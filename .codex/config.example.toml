@@ -1,0 +1,19 @@
+# Copy the snippets you need into ~/.codex/config.toml.
+#
+# Codex discovers repository skills from .agents/skills. This file is only an
+# example for optional per-skill configuration, such as disabling a skill
+# without deleting the symlink.
+
+[[skills.config]]
+path = "/path/to/agent-skills/.agents/skills/deep-documentation/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = "/path/to/agent-skills/.agents/skills/truthful-coder/SKILL.md"
+enabled = true
+
+# Example: hide a skill without removing it from disk.
+#
+# [[skills.config]]
+# path = "/path/to/agent-skills/.agents/skills/truthful-coder/SKILL.md"
+# enabled = false
