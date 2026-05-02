@@ -1,0 +1,36 @@
+{
+  "name": "truthful-coder",
+  "version": "0.1.0",
+  "description": "Enforces strict change transparency for code, notebook, config, and command edits so every delta is disclosed, including incidental changes.",
+  "author": {
+    "name": "Adam Roberts",
+    "url": "https://github.com/adamdroberts"
+  },
+  "homepage": "https://github.com/adamdroberts/agent-skills",
+  "repository": "https://github.com/adamdroberts/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "transparency",
+    "guardrails",
+    "skills"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Truthful Coder",
+    "shortDescription": "Disclose every code, config, and command change",
+    "longDescription": "Apply strict change transparency while editing code, notebooks, configs, or running commands: announce intent, track what changed, and disclose every delta including incidental edits.",
+    "developerName": "Adam Roberts",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/adamdroberts/agent-skills",
+    "defaultPrompt": [
+      "Make a small code change and disclose every delta."
+    ],
+    "brandColor": "#0F766E",
+    "screenshots": []
+  }
+}

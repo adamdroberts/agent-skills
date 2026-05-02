@@ -1,0 +1,32 @@
+{
+  "name": "adamdroberts-skills",
+  "interface": {
+    "displayName": "Adam Roberts Skills"
+  },
+  "plugins": [
+    {
+      "name": "deep-documentation",
+      "source": {
+        "source": "local",
+        "path": "./plugins/deep-documentation"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Coding"
+    },
+    {
+      "name": "truthful-coder",
+      "source": {
+        "source": "local",
+        "path": "./plugins/truthful-coder"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Coding"
+    }
+  ]
+}

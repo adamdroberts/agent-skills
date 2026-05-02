@@ -36,9 +36,19 @@ agent-skills/
 │       └── truthful-coder    -> ../../truthful-coder
 │
 ├── .agents/
-│   └── skills/                         Codex adapters (symlinks)
+│   ├── plugins/
+│   │   └── marketplace.json            Codex plugin marketplace catalog
+│   └── skills/                         Codex repository adapters (symlinks)
 │       ├── deep-documentation -> ../../deep-documentation
 │       └── truthful-coder    -> ../../truthful-coder
+│
+├── plugins/                            Codex plugin roots
+│   ├── deep-documentation/
+│   │   ├── .codex-plugin/plugin.json
+│   │   └── skills/deep-documentation -> ../../../deep-documentation
+│   └── truthful-coder/
+│       ├── .codex-plugin/plugin.json
+│       └── skills/truthful-coder -> ../../../truthful-coder
 │
 ├── .gemini/
 │   ├── agents/                         Gemini wrappers (NOT symlinks)
@@ -71,7 +81,9 @@ flowchart LR
     end
 
     subgraph Codex["Codex"]
-        CDX[".agents/skills/&lt;name&gt;<br/>(symlink)"]
+        CDXR[".agents/skills/&lt;name&gt;<br/>(repo symlink)"]
+        CDXM[".agents/plugins/<br/>marketplace.json"]
+        CDXP["plugins/&lt;name&gt;/.codex-plugin/<br/>plugin.json<br/>skills: './skills/'"]
     end
 
     subgraph Gemini["Gemini CLI"]
@@ -83,8 +95,11 @@ flowchart LR
     DD --> PLG
     TC --> PLG
     PLG --> MKT
-    DD --> CDX
-    TC --> CDX
+    DD --> CDXR
+    TC --> CDXR
+    DD --> CDXP
+    TC --> CDXP
+    CDXP --> CDXM
     DD -.reads at runtime.-> GEM
     TC -.reads at runtime.-> GEM
 ```
@@ -95,10 +110,11 @@ flowchart LR
 |-------|--------------|--------|
 | Claude Code (project) | Symlink | Claude Code resolves `.claude/skills/<name>/SKILL.md` and follows symlinks transparently. |
 | Claude Code (marketplace) | Plugin manifests | The marketplace catalog references each canonical folder as a plugin source. Each plugin's `plugin.json` sets `"skills": ["./"]` so the SKILL.md at the plugin root is loaded directly, with the skill name coming from the SKILL.md frontmatter. |
-| Codex | Symlink | Codex discovers skills under `.agents/skills/` and follows symlinks. |
+| Codex (plugin marketplace) | Codex plugin manifests | Codex reads `.agents/plugins/marketplace.json` and per-plugin `.codex-plugin/plugin.json` manifests. Its `skills` field is a string path, so each Codex plugin root exposes `./skills/` as a symlink back to the canonical folder. |
+| Codex (repository skills) | Symlink | Codex discovers skills under `.agents/skills/` and follows symlinks. |
 | Gemini CLI | Markdown wrapper | Gemini does not natively load `SKILL.md` files, so the wrapper is a Gemini agent that locates and reads the canonical `SKILL.md` at runtime and treats it as authoritative. |
 
-The wrapper-vs-symlink split is forced by the agents themselves, not a stylistic choice: an environment that ignores symlinks would break Claude Code and Codex equally, and Gemini's agent format requires a markdown file with its own frontmatter.
+The wrapper-vs-symlink split is forced by the agents themselves, not a stylistic choice: an environment that ignores symlinks would break Claude Code project skills and Codex repository skills equally, and Gemini's agent format requires a markdown file with its own frontmatter.
 
 ## Plugin marketplace internals
 
@@ -111,10 +127,14 @@ When Claude Code installs a plugin, it copies the plugin's directory into `~/.cl
 
 The marketplace name is `adamdroberts-skills`; the literal `agent-skills` is on Anthropic's reserved-names list.
 
+Codex plugin metadata is separate because Codex uses a different manifest shape. The Codex marketplace lives at `.agents/plugins/marketplace.json`; entries point to `plugins/<name>`, and each plugin manifest lives under `plugins/<name>/.codex-plugin/plugin.json`. The Codex manifest uses `"skills": "./skills/"`, a string path, with `plugins/<name>/skills/<name>` symlinked to the canonical root folder. Keeping the Codex manifests separate avoids making Claude Code parse Codex metadata or Codex parse Claude's array-valued `skills` field.
+
 ## Versioning
 
-No `version` field is set in either `marketplace.json` or the per-plugin `plugin.json`. Per the marketplace docs, this means Claude Code uses the **git commit SHA** as the version, so every commit on `main` is a new version and `/plugin marketplace update` will pull it. Pin a `version` string only when you want to control update timing explicitly.
+No `version` field is set in the Claude Code `marketplace.json` or per-plugin `.claude-plugin/plugin.json` files. Per the Claude Code marketplace docs, this means Claude Code uses the **git commit SHA** as the version, so every commit on `main` is a new version and `/plugin marketplace update` will pull it. Pin a Claude Code `version` string only when you want to control update timing explicitly.
+
+Codex plugin manifests include a conventional `version` field because Codex plugin metadata is rendered as a plugin card in the TUI. Update those versions when the Codex plugin packaging changes in a user-visible way.
 
 ## What canonical means here
 
-The root skill folders are the *only* place skill content is edited. All other entries — `.claude/skills/<name>`, `.agents/skills/<name>`, the plugin manifests — point back at them. If your environment cannot follow symlinks, copy the canonical folder into place rather than editing a copy somewhere else.
+The root skill folders are the *only* place skill content is edited. All other entries — `.claude/skills/<name>`, `.agents/skills/<name>`, the Codex plugin `skills/` links, and the plugin manifests — point back at them. If your environment cannot follow symlinks, copy the canonical folder into place rather than editing a copy somewhere else.

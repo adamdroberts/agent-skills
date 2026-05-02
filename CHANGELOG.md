@@ -4,6 +4,13 @@ Append-only history of this repository. Entries are grouped by date.
 
 ## 2026-05-02
 
+### Added — Codex plugin marketplace
+
+- Added a Codex-native marketplace catalog at [.agents/plugins/marketplace.json](.agents/plugins/marketplace.json).
+- Added Codex plugin manifests at [plugins/deep-documentation/.codex-plugin/plugin.json](plugins/deep-documentation/.codex-plugin/plugin.json) and [plugins/truthful-coder/.codex-plugin/plugin.json](plugins/truthful-coder/.codex-plugin/plugin.json), each using Codex's string-valued `"skills": "./skills/"` manifest shape.
+- Added per-plugin `skills/` symlinks back to the canonical root skill folders so Codex plugin installs and repository skill discovery share the same `SKILL.md` source.
+- Why it matters: Codex no longer has to parse Claude Code's array-valued `"skills": ["./"]` plugin manifests, which was causing `plugin/read failed` in the TUI.
+
 ### Added — deep documentation pass
 
 - Added `docs/` with: index ([docs/README.md](docs/README.md)), per-agent install guide ([docs/install.md](docs/install.md)), architecture page with Mermaid diagram ([docs/architecture.md](docs/architecture.md)), and contribution guide for adding new skills end-to-end ([docs/contributing.md](docs/contributing.md)).

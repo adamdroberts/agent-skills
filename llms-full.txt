@@ -41,29 +41,36 @@ The recommended path for Claude Code is the plugin marketplace:
 
 The marketplace name is `adamdroberts-skills` (the literal `agent-skills` is reserved by Anthropic). Updates ride on git commits — re-run `/plugin marketplace update adamdroberts-skills` to pull the latest.
 
-For Codex, Gemini CLI, project-scoped Claude Code installs, and direct use without an agent runtime, see **[docs/install.md](docs/install.md)**.
+Codex can also add this repository as a plugin marketplace:
+
+```bash
+codex plugin marketplace add adamdroberts/agent-skills
+```
+
+Then use the Codex TUI Plugins panel to install `deep-documentation` or `truthful-coder`. For Gemini CLI, project-scoped installs, and direct use without an agent runtime, see **[docs/install.md](docs/install.md)**.
 
 ## Agent support
 
 | Agent | Adapter | Notes |
 |-------|---------|-------|
 | Claude Code (marketplace) | [.claude-plugin/marketplace.json](.claude-plugin/marketplace.json) + per-plugin [plugin.json](deep-documentation/.claude-plugin/plugin.json) | Each skill is its own plugin under marketplace `adamdroberts-skills`; `"skills": ["./"]` loads the root `SKILL.md` directly. |
-| Claude Code (project) | [.claude/skills/](.claude/skills) | Symlinks to the canonical root skill folders. Loaded via `--add-dir` or copied into another project's `.claude/skills/`. |
-| Codex | [.agents/skills/](.agents/skills) | Symlinks to the canonical root skill folders. Codex discovers repository skills from `.agents/skills` and follows symlinks. |
-| Gemini CLI | [.gemini/agents/](.gemini/agents) | Markdown wrappers (not symlinks) because Gemini does not natively load `SKILL.md`. The wrapper reads the canonical `SKILL.md` at runtime. |
+| Claude Code (project) | [.claude/skills/](.claude/skills/) | Symlinks to the canonical root skill folders. Loaded via `--add-dir` or copied into another project's `.claude/skills/`. |
+| Codex (plugin marketplace) | [.agents/plugins/marketplace.json](.agents/plugins/marketplace.json) + [plugins/](plugins/) | Codex-native plugin metadata; each plugin exposes a `skills/` symlink back to the canonical root folder. |
+| Codex (repository skills) | [.agents/skills/](.agents/skills/) | Symlinks to the canonical root skill folders. Codex discovers repository skills from `.agents/skills` and follows symlinks. |
+| Gemini CLI | [.gemini/agents/](.gemini/agents/) | Markdown wrappers (not symlinks) because Gemini does not natively load `SKILL.md`. The wrapper reads the canonical `SKILL.md` at runtime. |
 
 ## Documentation
 
-- **[docs/](docs)** — browsable documentation set.
+- **[docs/](docs/)** — browsable documentation set.
   - [docs/install.md](docs/install.md) — every install path, per agent.
-  - [docs/architecture.md](docs/architecture.md) — repo layout, the canonical-folder + adapter pattern, Mermaid diagram of how the four distribution paths share one source.
-  - [docs/contributing.md](docs/contributing.md) — step-by-step guide for adding a new skill end-to-end (canonical folder, four adapters, plugin manifest, marketplace entry, validation).
+  - [docs/architecture.md](docs/architecture.md) — repo layout, the canonical-folder + adapter pattern, Mermaid diagram of how the distribution paths share one source.
+  - [docs/contributing.md](docs/contributing.md) — step-by-step guide for adding a new skill end-to-end (canonical folder, five adapters, plugin manifests, marketplace entries, validation).
 - **[CHANGELOG.md](CHANGELOG.md)** — append-only history.
 - **[llms.txt](llms.txt)** and **[llms-full.txt](llms-full.txt)** — LLM-oriented index and bundled documentation set for ingestion.
 
 ## Status
 
-Stable. Two skills, four distribution channels, no breaking changes planned. New skills follow the contribution checklist in [docs/contributing.md](docs/contributing.md).
+Stable. Two skills, five install paths across Claude Code, Codex, and Gemini CLI, with no breaking changes planned. New skills follow the contribution checklist in [docs/contributing.md](docs/contributing.md).
 ---
 
 # CHANGELOG.md
@@ -73,6 +80,13 @@ Stable. Two skills, four distribution channels, no breaking changes planned. New
 Append-only history of this repository. Entries are grouped by date.
 
 ## 2026-05-02
+
+### Added — Codex plugin marketplace
+
+- Added a Codex-native marketplace catalog at [.agents/plugins/marketplace.json](.agents/plugins/marketplace.json).
+- Added Codex plugin manifests at [plugins/deep-documentation/.codex-plugin/plugin.json](plugins/deep-documentation/.codex-plugin/plugin.json) and [plugins/truthful-coder/.codex-plugin/plugin.json](plugins/truthful-coder/.codex-plugin/plugin.json), each using Codex's string-valued `"skills": "./skills/"` manifest shape.
+- Added per-plugin `skills/` symlinks back to the canonical root skill folders so Codex plugin installs and repository skill discovery share the same `SKILL.md` source.
+- Why it matters: Codex no longer has to parse Claude Code's array-valued `"skills": ["./"]` plugin manifests, which was causing `plugin/read failed` in the TUI.
 
 ### Added — deep documentation pass
 
@@ -120,8 +134,8 @@ The canonical skill content lives in the root-level skill folders (`deep-documen
 
 | Page | Covers |
 |------|--------|
-| [install.md](docs/install.md) | All ways to install or load these skills: Claude Code plugin marketplace, Claude Code project skills, Codex, Gemini CLI, and direct clone. |
-| [architecture.md](docs/architecture.md) | Repo layout, the canonical-folder + adapter pattern, the symlink/wrapper strategy per agent, and a Mermaid diagram of how the four distribution paths share one source of truth. |
+| [install.md](docs/install.md) | All ways to install or load these skills: Claude Code plugin marketplace, Claude Code project skills, Codex plugin marketplace, Codex repository skills, Gemini CLI, and direct clone. |
+| [architecture.md](docs/architecture.md) | Repo layout, the canonical-folder + adapter pattern, the symlink/wrapper strategy per agent, and a Mermaid diagram of how the distribution paths share one source of truth. |
 | [contributing.md](docs/contributing.md) | Step-by-step guide for adding a new skill: root folder, `SKILL.md` frontmatter, multi-agent wiring, plugin manifest, and marketplace entry. |
 
 ## Top-level artifacts
@@ -142,6 +156,9 @@ The canonical skill content lives in the root-level skill folders (`deep-documen
 | [../.claude-plugin/marketplace.json](.claude-plugin/marketplace.json) | Claude Code marketplace manifest (`adamdroberts-skills`). |
 | [../deep-documentation/.claude-plugin/plugin.json](deep-documentation/.claude-plugin/plugin.json) | Plugin manifest for `deep-documentation`. |
 | [../truthful-coder/.claude-plugin/plugin.json](truthful-coder/.claude-plugin/plugin.json) | Plugin manifest for `truthful-coder`. |
+| [../.agents/plugins/marketplace.json](.agents/plugins/marketplace.json) | Codex marketplace manifest (`adamdroberts-skills`). |
+| [../plugins/deep-documentation/.codex-plugin/plugin.json](plugins/deep-documentation/.codex-plugin/plugin.json) | Codex plugin manifest for `deep-documentation`. |
+| [../plugins/truthful-coder/.codex-plugin/plugin.json](plugins/truthful-coder/.codex-plugin/plugin.json) | Codex plugin manifest for `truthful-coder`. |
 ---
 
 # docs/install.md
@@ -188,7 +205,7 @@ git clone https://github.com/adamdroberts/agent-skills.git
 claude --add-dir /path/to/agent-skills
 ```
 
-Claude Code then discovers the skills via `.claude/skills/<name>/SKILL.md` (the entries in [`.claude/skills/`](.claude/skills) are symlinks to the canonical root folders).
+Claude Code then discovers the skills via `.claude/skills/<name>/SKILL.md` (the entries in [`.claude/skills/`](.claude/skills/) are symlinks to the canonical root folders).
 
 ### Option B: copy or symlink into your own project
 
@@ -212,9 +229,32 @@ Drop the same symlink/copy under `~/.claude/skills/<name>/` to make a skill avai
 
 See [`.claude/README.md`](.claude/README.md) for a focused Claude Code-only summary.
 
-## Codex
+## Codex — plugin marketplace
 
-Codex discovers repository skills from `.agents/skills/<name>/SKILL.md` and follows symlinks. The repo wires this for you: [`.agents/skills/`](.agents/skills) contains symlinks to the canonical root folders.
+Install the marketplace from a local checkout or from GitHub:
+
+```bash
+codex plugin marketplace add adamdroberts/agent-skills
+```
+
+Then open Codex, go to the Plugins panel, and install `deep-documentation` or `truthful-coder` from the `adamdroberts-skills` marketplace.
+
+If you had already added the marketplace before Codex plugin manifests were present, refresh the cached checkout:
+
+```bash
+codex plugin marketplace upgrade adamdroberts-skills
+```
+
+Codex metadata lives in:
+
+- Marketplace catalog: [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json)
+- Per-plugin manifests: [`plugins/deep-documentation/.codex-plugin/plugin.json`](plugins/deep-documentation/.codex-plugin/plugin.json) and [`plugins/truthful-coder/.codex-plugin/plugin.json`](plugins/truthful-coder/.codex-plugin/plugin.json)
+
+Each Codex plugin manifest sets `"skills": "./skills/"`. The `skills/` entries are symlinks back to the canonical root skill folders, which keeps Codex's string-path manifest shape separate from Claude Code's `"skills": ["./"]` plugin shape.
+
+## Codex — repository skills
+
+Codex discovers repository skills from `.agents/skills/<name>/SKILL.md` and follows symlinks. The repo wires this for you: [`.agents/skills/`](.agents/skills/) contains symlinks to the canonical root folders.
 
 To use the skills:
 
@@ -231,7 +271,7 @@ enabled = true
 
 ## Gemini CLI
 
-Gemini CLI does not natively load `SKILL.md` files. The repo ships compatibility wrappers in [`.gemini/agents/`](.gemini/agents): each `<name>.md` file is a Gemini agent that, when invoked, locates and reads the matching canonical `SKILL.md` and follows it.
+Gemini CLI does not natively load `SKILL.md` files. The repo ships compatibility wrappers in [`.gemini/agents/`](.gemini/agents/): each `<name>.md` file is a Gemini agent that, when invoked, locates and reads the matching canonical `SKILL.md` and follows it.
 
 To use these:
 
@@ -259,7 +299,8 @@ git clone https://github.com/adamdroberts/agent-skills.git
 |-------------------|-----|
 | Claude Code, multi-machine | Plugin marketplace (auto-update via git) |
 | Claude Code, one project only | Project skills via `--add-dir` or symlink |
-| Codex | `.agents/skills/` (already wired) |
+| Codex, multi-machine | Codex plugin marketplace |
+| Codex, one checkout only | `.agents/skills/` (already wired) |
 | Gemini CLI | `.gemini/agents/` wrappers |
 | Anything else | Read `<skill>/SKILL.md` directly |
 ---
@@ -304,9 +345,19 @@ agent-skills/
 │       └── truthful-coder    -> ../../truthful-coder
 │
 ├── .agents/
-│   └── skills/                         Codex adapters (symlinks)
+│   ├── plugins/
+│   │   └── marketplace.json            Codex plugin marketplace catalog
+│   └── skills/                         Codex repository adapters (symlinks)
 │       ├── deep-documentation -> ../../deep-documentation
 │       └── truthful-coder    -> ../../truthful-coder
+│
+├── plugins/                            Codex plugin roots
+│   ├── deep-documentation/
+│   │   ├── .codex-plugin/plugin.json
+│   │   └── skills/deep-documentation -> ../../../deep-documentation
+│   └── truthful-coder/
+│       ├── .codex-plugin/plugin.json
+│       └── skills/truthful-coder -> ../../../truthful-coder
 │
 ├── .gemini/
 │   ├── agents/                         Gemini wrappers (NOT symlinks)
@@ -339,7 +390,9 @@ flowchart LR
     end
 
     subgraph Codex["Codex"]
-        CDX[".agents/skills/&lt;name&gt;<br/>(symlink)"]
+        CDXR[".agents/skills/&lt;name&gt;<br/>(repo symlink)"]
+        CDXM[".agents/plugins/<br/>marketplace.json"]
+        CDXP["plugins/&lt;name&gt;/.codex-plugin/<br/>plugin.json<br/>skills: './skills/'"]
     end
 
     subgraph Gemini["Gemini CLI"]
@@ -351,8 +404,11 @@ flowchart LR
     DD --> PLG
     TC --> PLG
     PLG --> MKT
-    DD --> CDX
-    TC --> CDX
+    DD --> CDXR
+    TC --> CDXR
+    DD --> CDXP
+    TC --> CDXP
+    CDXP --> CDXM
     DD -.reads at runtime.-> GEM
     TC -.reads at runtime.-> GEM
 ```
@@ -363,10 +419,11 @@ flowchart LR
 |-------|--------------|--------|
 | Claude Code (project) | Symlink | Claude Code resolves `.claude/skills/<name>/SKILL.md` and follows symlinks transparently. |
 | Claude Code (marketplace) | Plugin manifests | The marketplace catalog references each canonical folder as a plugin source. Each plugin's `plugin.json` sets `"skills": ["./"]` so the SKILL.md at the plugin root is loaded directly, with the skill name coming from the SKILL.md frontmatter. |
-| Codex | Symlink | Codex discovers skills under `.agents/skills/` and follows symlinks. |
+| Codex (plugin marketplace) | Codex plugin manifests | Codex reads `.agents/plugins/marketplace.json` and per-plugin `.codex-plugin/plugin.json` manifests. Its `skills` field is a string path, so each Codex plugin root exposes `./skills/` as a symlink back to the canonical folder. |
+| Codex (repository skills) | Symlink | Codex discovers skills under `.agents/skills/` and follows symlinks. |
 | Gemini CLI | Markdown wrapper | Gemini does not natively load `SKILL.md` files, so the wrapper is a Gemini agent that locates and reads the canonical `SKILL.md` at runtime and treats it as authoritative. |
 
-The wrapper-vs-symlink split is forced by the agents themselves, not a stylistic choice: an environment that ignores symlinks would break Claude Code and Codex equally, and Gemini's agent format requires a markdown file with its own frontmatter.
+The wrapper-vs-symlink split is forced by the agents themselves, not a stylistic choice: an environment that ignores symlinks would break Claude Code project skills and Codex repository skills equally, and Gemini's agent format requires a markdown file with its own frontmatter.
 
 ## Plugin marketplace internals
 
@@ -379,13 +436,17 @@ When Claude Code installs a plugin, it copies the plugin's directory into `~/.cl
 
 The marketplace name is `adamdroberts-skills`; the literal `agent-skills` is on Anthropic's reserved-names list.
 
+Codex plugin metadata is separate because Codex uses a different manifest shape. The Codex marketplace lives at `.agents/plugins/marketplace.json`; entries point to `plugins/<name>`, and each plugin manifest lives under `plugins/<name>/.codex-plugin/plugin.json`. The Codex manifest uses `"skills": "./skills/"`, a string path, with `plugins/<name>/skills/<name>` symlinked to the canonical root folder. Keeping the Codex manifests separate avoids making Claude Code parse Codex metadata or Codex parse Claude's array-valued `skills` field.
+
 ## Versioning
 
-No `version` field is set in either `marketplace.json` or the per-plugin `plugin.json`. Per the marketplace docs, this means Claude Code uses the **git commit SHA** as the version, so every commit on `main` is a new version and `/plugin marketplace update` will pull it. Pin a `version` string only when you want to control update timing explicitly.
+No `version` field is set in the Claude Code `marketplace.json` or per-plugin `.claude-plugin/plugin.json` files. Per the Claude Code marketplace docs, this means Claude Code uses the **git commit SHA** as the version, so every commit on `main` is a new version and `/plugin marketplace update` will pull it. Pin a Claude Code `version` string only when you want to control update timing explicitly.
+
+Codex plugin manifests include a conventional `version` field because Codex plugin metadata is rendered as a plugin card in the TUI. Update those versions when the Codex plugin packaging changes in a user-visible way.
 
 ## What canonical means here
 
-The root skill folders are the *only* place skill content is edited. All other entries — `.claude/skills/<name>`, `.agents/skills/<name>`, the plugin manifests — point back at them. If your environment cannot follow symlinks, copy the canonical folder into place rather than editing a copy somewhere else.
+The root skill folders are the *only* place skill content is edited. All other entries — `.claude/skills/<name>`, `.agents/skills/<name>`, the Codex plugin `skills/` links, and the plugin manifests — point back at them. If your environment cannot follow symlinks, copy the canonical folder into place rather than editing a copy somewhere else.
 ---
 
 # docs/contributing.md
@@ -429,6 +490,59 @@ ln -s ../../my-skill .claude/skills/my-skill
 
 ```bash
 ln -s ../../my-skill .agents/skills/my-skill
+```
+
+### Codex plugin marketplace wiring
+
+Create a Codex plugin root that points back to the canonical skill folder:
+
+```bash
+mkdir -p plugins/my-skill/.codex-plugin plugins/my-skill/skills
+ln -s ../../../my-skill plugins/my-skill/skills/my-skill
+```
+
+Create `plugins/my-skill/.codex-plugin/plugin.json`:
+
+```json
+{
+  "name": "my-skill",
+  "version": "0.1.0",
+  "description": "<same one-line summary as SKILL.md>",
+  "homepage": "https://github.com/adamdroberts/agent-skills",
+  "repository": "https://github.com/adamdroberts/agent-skills",
+  "license": "MIT",
+  "author": { "name": "Adam Roberts", "url": "https://github.com/adamdroberts" },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "My Skill",
+    "shortDescription": "<short TUI subtitle>",
+    "longDescription": "<longer TUI details text>",
+    "developerName": "Adam Roberts",
+    "category": "Coding",
+    "capabilities": ["Interactive", "Read", "Write"],
+    "websiteURL": "https://github.com/adamdroberts/agent-skills",
+    "defaultPrompt": ["Use my-skill in this repository."],
+    "brandColor": "#2563EB",
+    "screenshots": []
+  }
+}
+```
+
+Append the plugin to [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json):
+
+```json
+{
+  "name": "my-skill",
+  "source": {
+    "source": "local",
+    "path": "./plugins/my-skill"
+  },
+  "policy": {
+    "installation": "AVAILABLE",
+    "authentication": "ON_INSTALL"
+  },
+  "category": "Coding"
+}
 ```
 
 ### Gemini CLI wrapper
@@ -529,8 +643,9 @@ claude plugin marketplace remove adamdroberts-skills
 Final pre-commit checklist:
 
 - [ ] `SKILL.md` frontmatter has `name` (matching folder) and `description`.
-- [ ] All four adapters exist: `.claude/skills/<name>`, `.agents/skills/<name>`, `.gemini/agents/<name>.md`, `<name>/.claude-plugin/plugin.json`.
-- [ ] `marketplace.json` lists the plugin and `claude plugin validate .` passes.
+- [ ] All five adapters exist: `.claude/skills/<name>`, `.agents/skills/<name>`, `.gemini/agents/<name>.md`, `<name>/.claude-plugin/plugin.json`, and `plugins/<name>/.codex-plugin/plugin.json`.
+- [ ] `.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json` list the plugin.
+- [ ] `claude plugin validate .` passes and the Codex plugin manifest is valid JSON.
 - [ ] README catalog table includes the new skill.
 - [ ] `llms.txt`, `llms-full.txt`, and `CHANGELOG.md` are updated.
 

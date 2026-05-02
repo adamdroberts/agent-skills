@@ -64,7 +64,30 @@ Drop the same symlink/copy under `~/.claude/skills/<name>/` to make a skill avai
 
 See [`.claude/README.md`](../.claude/README.md) for a focused Claude Code-only summary.
 
-## Codex
+## Codex — plugin marketplace
+
+Install the marketplace from a local checkout or from GitHub:
+
+```bash
+codex plugin marketplace add adamdroberts/agent-skills
+```
+
+Then open Codex, go to the Plugins panel, and install `deep-documentation` or `truthful-coder` from the `adamdroberts-skills` marketplace.
+
+If you had already added the marketplace before Codex plugin manifests were present, refresh the cached checkout:
+
+```bash
+codex plugin marketplace upgrade adamdroberts-skills
+```
+
+Codex metadata lives in:
+
+- Marketplace catalog: [`.agents/plugins/marketplace.json`](../.agents/plugins/marketplace.json)
+- Per-plugin manifests: [`plugins/deep-documentation/.codex-plugin/plugin.json`](../plugins/deep-documentation/.codex-plugin/plugin.json) and [`plugins/truthful-coder/.codex-plugin/plugin.json`](../plugins/truthful-coder/.codex-plugin/plugin.json)
+
+Each Codex plugin manifest sets `"skills": "./skills/"`. The `skills/` entries are symlinks back to the canonical root skill folders, which keeps Codex's string-path manifest shape separate from Claude Code's `"skills": ["./"]` plugin shape.
+
+## Codex — repository skills
 
 Codex discovers repository skills from `.agents/skills/<name>/SKILL.md` and follows symlinks. The repo wires this for you: [`.agents/skills/`](../.agents/skills/) contains symlinks to the canonical root folders.
 
@@ -111,6 +134,7 @@ git clone https://github.com/adamdroberts/agent-skills.git
 |-------------------|-----|
 | Claude Code, multi-machine | Plugin marketplace (auto-update via git) |
 | Claude Code, one project only | Project skills via `--add-dir` or symlink |
-| Codex | `.agents/skills/` (already wired) |
+| Codex, multi-machine | Codex plugin marketplace |
+| Codex, one checkout only | `.agents/skills/` (already wired) |
 | Gemini CLI | `.gemini/agents/` wrappers |
 | Anything else | Read `<skill>/SKILL.md` directly |

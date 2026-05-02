@@ -1,0 +1,37 @@
+{
+  "name": "deep-documentation",
+  "version": "0.1.0",
+  "description": "Create, expand, reorganize, and maintain deep repository documentation across READMEs, browsable docs, API/reference pages, llms.txt, llms-full.txt, changelogs, and repo-local agent skills.",
+  "author": {
+    "name": "Adam Roberts",
+    "url": "https://github.com/adamdroberts"
+  },
+  "homepage": "https://github.com/adamdroberts/agent-skills",
+  "repository": "https://github.com/adamdroberts/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "documentation",
+    "skills",
+    "llms.txt",
+    "readme"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Deep Documentation",
+    "shortDescription": "Maintain layered repository documentation and LLM indexes",
+    "longDescription": "Create, expand, reorganize, and maintain repository documentation across README files, docs pages, API references, llms.txt, llms-full.txt, changelogs, and repo-local agent guidance.",
+    "developerName": "Adam Roberts",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/adamdroberts/agent-skills",
+    "defaultPrompt": [
+      "Refresh the docs and LLM indexes for this repo."
+    ],
+    "brandColor": "#2563EB",
+    "screenshots": []
+  }
+}

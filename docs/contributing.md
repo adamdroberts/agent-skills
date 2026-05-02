@@ -39,6 +39,59 @@ ln -s ../../my-skill .claude/skills/my-skill
 ln -s ../../my-skill .agents/skills/my-skill
 ```
 
+### Codex plugin marketplace wiring
+
+Create a Codex plugin root that points back to the canonical skill folder:
+
+```bash
+mkdir -p plugins/my-skill/.codex-plugin plugins/my-skill/skills
+ln -s ../../../my-skill plugins/my-skill/skills/my-skill
+```
+
+Create `plugins/my-skill/.codex-plugin/plugin.json`:
+
+```json
+{
+  "name": "my-skill",
+  "version": "0.1.0",
+  "description": "<same one-line summary as SKILL.md>",
+  "homepage": "https://github.com/adamdroberts/agent-skills",
+  "repository": "https://github.com/adamdroberts/agent-skills",
+  "license": "MIT",
+  "author": { "name": "Adam Roberts", "url": "https://github.com/adamdroberts" },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "My Skill",
+    "shortDescription": "<short TUI subtitle>",
+    "longDescription": "<longer TUI details text>",
+    "developerName": "Adam Roberts",
+    "category": "Coding",
+    "capabilities": ["Interactive", "Read", "Write"],
+    "websiteURL": "https://github.com/adamdroberts/agent-skills",
+    "defaultPrompt": ["Use my-skill in this repository."],
+    "brandColor": "#2563EB",
+    "screenshots": []
+  }
+}
+```
+
+Append the plugin to [`.agents/plugins/marketplace.json`](../.agents/plugins/marketplace.json):
+
+```json
+{
+  "name": "my-skill",
+  "source": {
+    "source": "local",
+    "path": "./plugins/my-skill"
+  },
+  "policy": {
+    "installation": "AVAILABLE",
+    "authentication": "ON_INSTALL"
+  },
+  "category": "Coding"
+}
+```
+
 ### Gemini CLI wrapper
 
 Create `.gemini/agents/my-skill.md` modeled on the existing wrappers:
@@ -137,8 +190,9 @@ claude plugin marketplace remove adamdroberts-skills
 Final pre-commit checklist:
 
 - [ ] `SKILL.md` frontmatter has `name` (matching folder) and `description`.
-- [ ] All four adapters exist: `.claude/skills/<name>`, `.agents/skills/<name>`, `.gemini/agents/<name>.md`, `<name>/.claude-plugin/plugin.json`.
-- [ ] `marketplace.json` lists the plugin and `claude plugin validate .` passes.
+- [ ] All five adapters exist: `.claude/skills/<name>`, `.agents/skills/<name>`, `.gemini/agents/<name>.md`, `<name>/.claude-plugin/plugin.json`, and `plugins/<name>/.codex-plugin/plugin.json`.
+- [ ] `.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json` list the plugin.
+- [ ] `claude plugin validate .` passes and the Codex plugin manifest is valid JSON.
 - [ ] README catalog table includes the new skill.
 - [ ] `llms.txt`, `llms-full.txt`, and `CHANGELOG.md` are updated.
 

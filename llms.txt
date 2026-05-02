@@ -2,7 +2,7 @@
 
 A small collection of [Agent Skills](https://github.com/anthropics/skills) shipped through multiple agent runtimes from one canonical source. Each skill lives in its own root folder with `SKILL.md` as the source of truth; per-agent adapters point back at it.
 
-Marketplace name (Claude Code): `adamdroberts-skills`. Install: `/plugin marketplace add adamdroberts/agent-skills`.
+Marketplace name: `adamdroberts-skills`. Claude Code install: `/plugin marketplace add adamdroberts/agent-skills`. Codex marketplace install: `codex plugin marketplace add adamdroberts/agent-skills`.
 
 ## Skills
 
@@ -13,8 +13,8 @@ Marketplace name (Claude Code): `adamdroberts-skills`. Install: `/plugin marketp
 
 - [README.md](README.md) — project overview, skill catalog, install snippets.
 - [docs/README.md](docs/README.md) — documentation index.
-- [docs/install.md](docs/install.md) — install paths for Claude Code (marketplace and project skills), Codex, Gemini CLI, and direct clone.
-- [docs/architecture.md](docs/architecture.md) — repo layout, canonical-folder + adapter pattern, Mermaid diagram of the four distribution paths.
+- [docs/install.md](docs/install.md) — install paths for Claude Code (marketplace and project skills), Codex plugin marketplace, Codex repository skills, Gemini CLI, and direct clone.
+- [docs/architecture.md](docs/architecture.md) — repo layout, canonical-folder + adapter pattern, Mermaid diagram of the distribution paths.
 - [docs/contributing.md](docs/contributing.md) — step-by-step guide to adding a new skill across all distribution channels.
 - [CHANGELOG.md](CHANGELOG.md) — append-only history.
 
@@ -22,7 +22,8 @@ Marketplace name (Claude Code): `adamdroberts-skills`. Install: `/plugin marketp
 
 - [.claude-plugin/marketplace.json](.claude-plugin/marketplace.json) — Claude Code marketplace catalog.
 - [deep-documentation/.claude-plugin/plugin.json](deep-documentation/.claude-plugin/plugin.json), [truthful-coder/.claude-plugin/plugin.json](truthful-coder/.claude-plugin/plugin.json) — per-plugin manifests.
-- [.claude/skills/](.claude/skills/), [.agents/skills/](.agents/skills/) — symlink adapters for Claude Code project skills and Codex.
+- [.agents/plugins/marketplace.json](.agents/plugins/marketplace.json), [plugins/deep-documentation/.codex-plugin/plugin.json](plugins/deep-documentation/.codex-plugin/plugin.json), [plugins/truthful-coder/.codex-plugin/plugin.json](plugins/truthful-coder/.codex-plugin/plugin.json) — Codex marketplace catalog and per-plugin manifests.
+- [.claude/skills/](.claude/skills/), [.agents/skills/](.agents/skills/) — symlink adapters for Claude Code project skills and Codex repository skills.
 - [.gemini/agents/](.gemini/agents/) — markdown wrapper adapters for Gemini CLI.
 - [.claude/README.md](.claude/README.md) — Claude Code-specific notes.
 - [.codex/config.example.toml](.codex/config.example.toml), [.gemini/settings.example.json](.gemini/settings.example.json) — example per-agent configs.

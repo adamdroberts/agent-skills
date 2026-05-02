@@ -8,8 +8,8 @@ The canonical skill content lives in the root-level skill folders (`deep-documen
 
 | Page | Covers |
 |------|--------|
-| [install.md](install.md) | All ways to install or load these skills: Claude Code plugin marketplace, Claude Code project skills, Codex, Gemini CLI, and direct clone. |
-| [architecture.md](architecture.md) | Repo layout, the canonical-folder + adapter pattern, the symlink/wrapper strategy per agent, and a Mermaid diagram of how the four distribution paths share one source of truth. |
+| [install.md](install.md) | All ways to install or load these skills: Claude Code plugin marketplace, Claude Code project skills, Codex plugin marketplace, Codex repository skills, Gemini CLI, and direct clone. |
+| [architecture.md](architecture.md) | Repo layout, the canonical-folder + adapter pattern, the symlink/wrapper strategy per agent, and a Mermaid diagram of how the distribution paths share one source of truth. |
 | [contributing.md](contributing.md) | Step-by-step guide for adding a new skill: root folder, `SKILL.md` frontmatter, multi-agent wiring, plugin manifest, and marketplace entry. |
 
 ## Top-level artifacts
@@ -30,3 +30,6 @@ The canonical skill content lives in the root-level skill folders (`deep-documen
 | [../.claude-plugin/marketplace.json](../.claude-plugin/marketplace.json) | Claude Code marketplace manifest (`adamdroberts-skills`). |
 | [../deep-documentation/.claude-plugin/plugin.json](../deep-documentation/.claude-plugin/plugin.json) | Plugin manifest for `deep-documentation`. |
 | [../truthful-coder/.claude-plugin/plugin.json](../truthful-coder/.claude-plugin/plugin.json) | Plugin manifest for `truthful-coder`. |
+| [../.agents/plugins/marketplace.json](../.agents/plugins/marketplace.json) | Codex marketplace manifest (`adamdroberts-skills`). |
+| [../plugins/deep-documentation/.codex-plugin/plugin.json](../plugins/deep-documentation/.codex-plugin/plugin.json) | Codex plugin manifest for `deep-documentation`. |
+| [../plugins/truthful-coder/.codex-plugin/plugin.json](../plugins/truthful-coder/.codex-plugin/plugin.json) | Codex plugin manifest for `truthful-coder`. |
