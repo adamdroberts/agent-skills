@@ -1,0 +1,11 @@
+{
+  "name": "deep-documentation",
+  "description": "Create, expand, reorganize, and maintain deep repository documentation across READMEs, browsable docs, API/reference pages, llms.txt, llms-full.txt, changelogs, and repo-local agent skills.",
+  "homepage": "https://github.com/adamdroberts/agent-skills",
+  "repository": "https://github.com/adamdroberts/agent-skills",
+  "license": "MIT",
+  "author": {
+    "name": "Adam Roberts"
+  },
+  "skills": ["./"]
+}

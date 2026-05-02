@@ -1,0 +1,35 @@
+{
+  "name": "adamdroberts-skills",
+  "description": "Agent skills published from adamdroberts/agent-skills.",
+  "owner": {
+    "name": "Adam Roberts"
+  },
+  "plugins": [
+    {
+      "name": "deep-documentation",
+      "source": "./deep-documentation",
+      "description": "Create, expand, reorganize, and maintain deep repository documentation across READMEs, browsable docs, API/reference pages, llms.txt, llms-full.txt, changelogs, and repo-local agent skills.",
+      "category": "documentation",
+      "keywords": ["documentation", "skills", "llms.txt", "readme"],
+      "homepage": "https://github.com/adamdroberts/agent-skills",
+      "repository": "https://github.com/adamdroberts/agent-skills",
+      "license": "MIT",
+      "author": {
+        "name": "Adam Roberts"
+      }
+    },
+    {
+      "name": "truthful-coder",
+      "source": "./truthful-coder",
+      "description": "Enforces strict change transparency for code, notebook, config, and command edits so every delta is disclosed, including incidental changes.",
+      "category": "engineering-practices",
+      "keywords": ["transparency", "guardrails", "skills"],
+      "homepage": "https://github.com/adamdroberts/agent-skills",
+      "repository": "https://github.com/adamdroberts/agent-skills",
+      "license": "MIT",
+      "author": {
+        "name": "Adam Roberts"
+      }
+    }
+  ]
+}
