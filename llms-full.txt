@@ -1,0 +1,908 @@
+# adamdroberts/agent-skills — full documentation bundle
+
+Concatenated copy of the canonical project documentation and skill content for LLM ingestion. Generated from source files; for the live versions, follow the file references in [llms.txt](llms.txt). Sections are separated by horizontal rules. All file references inside this bundle are relative to the repository root.
+
+## Source files included
+
+1. README.md
+2. CHANGELOG.md
+3. docs/README.md
+4. docs/install.md
+5. docs/architecture.md
+6. docs/contributing.md
+7. .claude/README.md
+8. deep-documentation/SKILL.md
+9. truthful-coder/SKILL.md
+
+---
+
+# README.md
+
+# agent-skills
+
+A small collection of [Agent Skills](https://github.com/anthropics/skills) shipped through Claude Code, Codex, and Gemini CLI from one canonical source. Each skill lives in its own root folder with `SKILL.md` as the source of truth; per-agent adapters point back at it so there is no drift across runtimes.
+
+## Skills
+
+| Skill | Path | Summary |
+|-------|------|---------|
+| **deep-documentation** | [deep-documentation/SKILL.md](deep-documentation/SKILL.md) | Create, expand, reorganize, and maintain repository documentation with deep coverage: READMEs, browsable docs, API/reference pages, `llms.txt` / `llms-full.txt`, changelogs, and repo-local agent skills. Use when you want comprehensive docs, LLM-friendly indexes, documentation that stays in sync with code, or guidance for future models on how to use the project. |
+| **truthful-coder** | [truthful-coder/SKILL.md](truthful-coder/SKILL.md) | Strict change transparency while editing code, notebooks, configs, or running commands: announce intent, track what actually changed, and disclose every delta (including formatters, lockfiles, and incidental edits). Use when you want no "hidden" repo or environment changes. |
+
+## Install
+
+The recommended path for Claude Code is the plugin marketplace:
+
+```text
+/plugin marketplace add adamdroberts/agent-skills
+/plugin install deep-documentation@adamdroberts-skills
+/plugin install truthful-coder@adamdroberts-skills
+```
+
+The marketplace name is `adamdroberts-skills` (the literal `agent-skills` is reserved by Anthropic). Updates ride on git commits — re-run `/plugin marketplace update adamdroberts-skills` to pull the latest.
+
+For Codex, Gemini CLI, project-scoped Claude Code installs, and direct use without an agent runtime, see **[docs/install.md](docs/install.md)**.
+
+## Agent support
+
+| Agent | Adapter | Notes |
+|-------|---------|-------|
+| Claude Code (marketplace) | [.claude-plugin/marketplace.json](.claude-plugin/marketplace.json) + per-plugin [plugin.json](deep-documentation/.claude-plugin/plugin.json) | Each skill is its own plugin under marketplace `adamdroberts-skills`; `"skills": ["./"]` loads the root `SKILL.md` directly. |
+| Claude Code (project) | [.claude/skills/](.claude/skills) | Symlinks to the canonical root skill folders. Loaded via `--add-dir` or copied into another project's `.claude/skills/`. |
+| Codex | [.agents/skills/](.agents/skills) | Symlinks to the canonical root skill folders. Codex discovers repository skills from `.agents/skills` and follows symlinks. |
+| Gemini CLI | [.gemini/agents/](.gemini/agents) | Markdown wrappers (not symlinks) because Gemini does not natively load `SKILL.md`. The wrapper reads the canonical `SKILL.md` at runtime. |
+
+## Documentation
+
+- **[docs/](docs)** — browsable documentation set.
+  - [docs/install.md](docs/install.md) — every install path, per agent.
+  - [docs/architecture.md](docs/architecture.md) — repo layout, the canonical-folder + adapter pattern, Mermaid diagram of how the four distribution paths share one source.
+  - [docs/contributing.md](docs/contributing.md) — step-by-step guide for adding a new skill end-to-end (canonical folder, four adapters, plugin manifest, marketplace entry, validation).
+- **[CHANGELOG.md](CHANGELOG.md)** — append-only history.
+- **[llms.txt](llms.txt)** and **[llms-full.txt](llms-full.txt)** — LLM-oriented index and bundled documentation set for ingestion.
+
+## Status
+
+Stable. Two skills, four distribution channels, no breaking changes planned. New skills follow the contribution checklist in [docs/contributing.md](docs/contributing.md).
+---
+
+# CHANGELOG.md
+
+# Changelog
+
+Append-only history of this repository. Entries are grouped by date.
+
+## 2026-05-02
+
+### Added — deep documentation pass
+
+- Added `docs/` with: index ([docs/README.md](docs/README.md)), per-agent install guide ([docs/install.md](docs/install.md)), architecture page with Mermaid diagram ([docs/architecture.md](docs/architecture.md)), and contribution guide for adding new skills end-to-end ([docs/contributing.md](docs/contributing.md)).
+- Added [llms.txt](llms.txt) and [llms-full.txt](llms-full.txt) so LLM agents can discover and ingest the documentation set without traversing the tree.
+- Added this `CHANGELOG.md`.
+- Polished [README.md](README.md) to link to the new documentation set and tighten the install snippets.
+
+### Added — Claude Code plugin marketplace
+
+- Published the repo as a Claude Code plugin marketplace named `adamdroberts-skills` ([.claude-plugin/marketplace.json](.claude-plugin/marketplace.json)). The literal `agent-skills` name is reserved by Anthropic and could not be used.
+- Added per-skill plugin manifests at [deep-documentation/.claude-plugin/plugin.json](deep-documentation/.claude-plugin/plugin.json) and [truthful-coder/.claude-plugin/plugin.json](truthful-coder/.claude-plugin/plugin.json), each declaring `"skills": ["./"]` so the existing root-level `SKILL.md` files are loaded directly without restructuring.
+- Why it matters: skills are now installable remotely with `/plugin marketplace add adamdroberts/agent-skills` and `/plugin install <skill>@adamdroberts-skills`. No `version` field is set, so every commit on `main` is a new version and `/plugin marketplace update` will pick it up.
+- Verification: `claude plugin validate .` passes; both plugins were installed locally end-to-end and `SKILL.md` was confirmed at the cached plugin root, then the test install was rolled back.
+
+### Added — agent integration adapters committed
+
+- Committed the per-agent integration directories that the README had been referencing: `.agents/skills/` and `.claude/skills/` (symlinks to canonical root skill folders), `.gemini/agents/` (compatibility wrappers because Gemini does not natively load `SKILL.md`), `.codex/config.example.toml`, `.gemini/settings.example.json`, and [.claude/README.md](.claude/README.md).
+- Added `.gitignore` to keep `.claude/settings.local.json` out of version control.
+
+## 2026-04-14
+
+### Added
+
+- Reorganized the README to introduce the skill catalog and per-agent support sections.
+- Added the canonical `deep-documentation` skill at [deep-documentation/SKILL.md](deep-documentation/SKILL.md): create and maintain serious repository documentation across READMEs, browsable docs, API references, `llms.txt`, `llms-full.txt`, changelogs, and repo-local agent skills.
+
+## 2026-02-22
+
+### Added
+
+- Initial commit and project description in the README.
+- Added the canonical `truthful-coder` skill at [truthful-coder/SKILL.md](truthful-coder/SKILL.md): enforces strict change transparency for code, notebook, config, and command edits so every delta is disclosed.
+---
+
+# docs/README.md
+
+# Documentation
+
+This directory documents the `agent-skills` repository: what it ships, how each agent loads it, and how to add a new skill.
+
+The canonical skill content lives in the root-level skill folders (`deep-documentation/`, `truthful-coder/`). Everything in this directory describes how that content is packaged, distributed, and extended — it does not redefine the skills themselves.
+
+## Pages
+
+| Page | Covers |
+|------|--------|
+| [install.md](docs/install.md) | All ways to install or load these skills: Claude Code plugin marketplace, Claude Code project skills, Codex, Gemini CLI, and direct clone. |
+| [architecture.md](docs/architecture.md) | Repo layout, the canonical-folder + adapter pattern, the symlink/wrapper strategy per agent, and a Mermaid diagram of how the four distribution paths share one source of truth. |
+| [contributing.md](docs/contributing.md) | Step-by-step guide for adding a new skill: root folder, `SKILL.md` frontmatter, multi-agent wiring, plugin manifest, and marketplace entry. |
+
+## Top-level artifacts
+
+| File | Purpose |
+|------|---------|
+| [../README.md](README.md) | Project overview, skill catalog, and short install snippets. |
+| [../CHANGELOG.md](CHANGELOG.md) | Append-only history of changes to the skills, distribution layout, and marketplace. |
+| [../llms.txt](llms.txt) | Concise LLM-oriented index pointing at the documentation set. |
+| [../llms-full.txt](llms-full.txt) | Single-file bundle of the canonical docs and skill content for ingestion. |
+
+## Source-of-truth files
+
+| File | Role |
+|------|------|
+| [../deep-documentation/SKILL.md](deep-documentation/SKILL.md) | Canonical content of the `deep-documentation` skill. |
+| [../truthful-coder/SKILL.md](truthful-coder/SKILL.md) | Canonical content of the `truthful-coder` skill. |
+| [../.claude-plugin/marketplace.json](.claude-plugin/marketplace.json) | Claude Code marketplace manifest (`adamdroberts-skills`). |
+| [../deep-documentation/.claude-plugin/plugin.json](deep-documentation/.claude-plugin/plugin.json) | Plugin manifest for `deep-documentation`. |
+| [../truthful-coder/.claude-plugin/plugin.json](truthful-coder/.claude-plugin/plugin.json) | Plugin manifest for `truthful-coder`. |
+---
+
+# docs/install.md
+
+# Install
+
+The same canonical skills are exposed through several distribution paths. Pick the one that matches your agent.
+
+## Claude Code — plugin marketplace (recommended)
+
+Install remotely with no clone. Inside Claude Code:
+
+```text
+/plugin marketplace add adamdroberts/agent-skills
+/plugin install deep-documentation@adamdroberts-skills
+/plugin install truthful-coder@adamdroberts-skills
+```
+
+To pull updates later:
+
+```text
+/plugin marketplace update adamdroberts-skills
+```
+
+The marketplace name is `adamdroberts-skills` (the literal `agent-skills` name is reserved by Anthropic for official use). The two plugins use the same names as the skills they ship.
+
+Manifests:
+
+- Marketplace catalog: [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json)
+- Per-plugin manifests: [`deep-documentation/.claude-plugin/plugin.json`](deep-documentation/.claude-plugin/plugin.json) and [`truthful-coder/.claude-plugin/plugin.json`](truthful-coder/.claude-plugin/plugin.json)
+
+Each plugin manifest sets `"skills": ["./"]` so the `SKILL.md` at the plugin root is loaded directly. The `name` field in the SKILL.md frontmatter determines the invocation name.
+
+Versioning: neither manifest pins a `version`, so Claude Code uses the git commit SHA. Every commit on `main` is treated as a new version, and `/plugin marketplace update` will pick it up.
+
+## Claude Code — project skills
+
+Useful when you want the skills available in a single project without going through the marketplace.
+
+### Option A: clone and add this repo as a directory
+
+```bash
+git clone https://github.com/adamdroberts/agent-skills.git
+claude --add-dir /path/to/agent-skills
+```
+
+Claude Code then discovers the skills via `.claude/skills/<name>/SKILL.md` (the entries in [`.claude/skills/`](.claude/skills) are symlinks to the canonical root folders).
+
+### Option B: copy or symlink into your own project
+
+From your other project:
+
+```bash
+mkdir -p .claude/skills
+ln -s /path/to/agent-skills/deep-documentation .claude/skills/deep-documentation
+ln -s /path/to/agent-skills/truthful-coder .claude/skills/truthful-coder
+```
+
+If your environment does not preserve symlinks, copy the root skill folder instead:
+
+```bash
+cp -R /path/to/agent-skills/deep-documentation .claude/skills/deep-documentation
+```
+
+### Option C: install personally
+
+Drop the same symlink/copy under `~/.claude/skills/<name>/` to make a skill available across all your Claude Code sessions.
+
+See [`.claude/README.md`](.claude/README.md) for a focused Claude Code-only summary.
+
+## Codex
+
+Codex discovers repository skills from `.agents/skills/<name>/SKILL.md` and follows symlinks. The repo wires this for you: [`.agents/skills/`](.agents/skills) contains symlinks to the canonical root folders.
+
+To use the skills:
+
+- Launch Codex from a checkout of this repo, or
+- Copy/symlink individual root skill folders into a Codex skill location for another project.
+
+To enable or disable a skill without removing the symlink, copy the relevant snippet from [`.codex/config.example.toml`](.codex/config.example.toml) into `~/.codex/config.toml`:
+
+```toml
+[[skills.config]]
+path = "/path/to/agent-skills/.agents/skills/deep-documentation/SKILL.md"
+enabled = true
+```
+
+## Gemini CLI
+
+Gemini CLI does not natively load `SKILL.md` files. The repo ships compatibility wrappers in [`.gemini/agents/`](.gemini/agents): each `<name>.md` file is a Gemini agent that, when invoked, locates and reads the matching canonical `SKILL.md` and follows it.
+
+To use these:
+
+1. Copy or symlink the wrapper files into your Gemini agent directory:
+   ```bash
+   cp /path/to/agent-skills/.gemini/agents/deep-documentation.md ~/.gemini/agents/
+   cp /path/to/agent-skills/.gemini/agents/truthful-coder.md ~/.gemini/agents/
+   ```
+2. Make sure Gemini can read the canonical `SKILL.md`. The wrapper expects to find `deep-documentation/SKILL.md` (or `truthful-coder/SKILL.md`) somewhere readable — typically by launching Gemini from this repo, adding it to the workspace, or copying the canonical skill folder into the active project.
+
+For optional per-agent overrides (e.g. `maxTurns`), see [`.gemini/settings.example.json`](.gemini/settings.example.json).
+
+## Direct use (any agent)
+
+The root skill folders are self-contained. Any agent that can read a markdown file with YAML frontmatter can use them directly:
+
+```bash
+git clone https://github.com/adamdroberts/agent-skills.git
+# point your agent at agent-skills/deep-documentation/SKILL.md or agent-skills/truthful-coder/SKILL.md
+```
+
+## Choosing a path
+
+| If your agent is… | Use |
+|-------------------|-----|
+| Claude Code, multi-machine | Plugin marketplace (auto-update via git) |
+| Claude Code, one project only | Project skills via `--add-dir` or symlink |
+| Codex | `.agents/skills/` (already wired) |
+| Gemini CLI | `.gemini/agents/` wrappers |
+| Anything else | Read `<skill>/SKILL.md` directly |
+---
+
+# docs/architecture.md
+
+# Architecture
+
+The repo follows a **canonical-folder + adapter** pattern so every supported agent loads the same source of truth.
+
+## Folder layout
+
+```
+agent-skills/
+├── README.md                           project overview + skill catalog
+├── CHANGELOG.md                        append-only history
+├── LICENSE
+├── llms.txt                            concise LLM index
+├── llms-full.txt                       bundled docs for ingestion
+│
+├── docs/                               browsable documentation
+│   ├── README.md                       this index
+│   ├── install.md                      per-agent install guide
+│   ├── architecture.md                 (this page)
+│   └── contributing.md                 how to add a new skill
+│
+├── deep-documentation/                 ← canonical skill folder
+│   ├── SKILL.md                        ← source of truth
+│   └── .claude-plugin/plugin.json      Claude Code plugin manifest
+│
+├── truthful-coder/                     ← canonical skill folder
+│   ├── SKILL.md                        ← source of truth
+│   └── .claude-plugin/plugin.json      Claude Code plugin manifest
+│
+├── .claude-plugin/
+│   └── marketplace.json                marketplace catalog (`adamdroberts-skills`)
+│
+├── .claude/
+│   ├── README.md                       Claude Code-specific notes
+│   └── skills/                         project-skill adapters
+│       ├── deep-documentation -> ../../deep-documentation
+│       └── truthful-coder    -> ../../truthful-coder
+│
+├── .agents/
+│   └── skills/                         Codex adapters (symlinks)
+│       ├── deep-documentation -> ../../deep-documentation
+│       └── truthful-coder    -> ../../truthful-coder
+│
+├── .gemini/
+│   ├── agents/                         Gemini wrappers (NOT symlinks)
+│   │   ├── deep-documentation.md       reads canonical SKILL.md at runtime
+│   │   └── truthful-coder.md
+│   └── settings.example.json           optional Gemini agent overrides
+│
+└── .codex/
+    └── config.example.toml             optional per-skill Codex config
+```
+
+## How distribution works
+
+Each supported agent looks up skills in a different location, so the repo provides one **adapter** per agent that points back at the canonical root folder.
+
+```mermaid
+flowchart LR
+    subgraph Canonical["Canonical source of truth"]
+        DD["deep-documentation/SKILL.md"]
+        TC["truthful-coder/SKILL.md"]
+    end
+
+    subgraph CCProj["Claude Code (project)"]
+        CCP[".claude/skills/&lt;name&gt;<br/>(symlink)"]
+    end
+
+    subgraph CCMkt["Claude Code (marketplace)"]
+        MKT[".claude-plugin/<br/>marketplace.json"]
+        PLG["&lt;name&gt;/.claude-plugin/<br/>plugin.json<br/>skills: ['./']"]
+    end
+
+    subgraph Codex["Codex"]
+        CDX[".agents/skills/&lt;name&gt;<br/>(symlink)"]
+    end
+
+    subgraph Gemini["Gemini CLI"]
+        GEM[".gemini/agents/&lt;name&gt;.md<br/>(wrapper, reads SKILL.md)"]
+    end
+
+    DD --> CCP
+    TC --> CCP
+    DD --> PLG
+    TC --> PLG
+    PLG --> MKT
+    DD --> CDX
+    TC --> CDX
+    DD -.reads at runtime.-> GEM
+    TC -.reads at runtime.-> GEM
+```
+
+## Why the adapters differ
+
+| Agent | Adapter type | Reason |
+|-------|--------------|--------|
+| Claude Code (project) | Symlink | Claude Code resolves `.claude/skills/<name>/SKILL.md` and follows symlinks transparently. |
+| Claude Code (marketplace) | Plugin manifests | The marketplace catalog references each canonical folder as a plugin source. Each plugin's `plugin.json` sets `"skills": ["./"]` so the SKILL.md at the plugin root is loaded directly, with the skill name coming from the SKILL.md frontmatter. |
+| Codex | Symlink | Codex discovers skills under `.agents/skills/` and follows symlinks. |
+| Gemini CLI | Markdown wrapper | Gemini does not natively load `SKILL.md` files, so the wrapper is a Gemini agent that locates and reads the canonical `SKILL.md` at runtime and treats it as authoritative. |
+
+The wrapper-vs-symlink split is forced by the agents themselves, not a stylistic choice: an environment that ignores symlinks would break Claude Code and Codex equally, and Gemini's agent format requires a markdown file with its own frontmatter.
+
+## Plugin marketplace internals
+
+Two design choices shape the Claude Code plugin layout:
+
+1. **Plugin per skill**, not one bundled plugin. Lets users install only the skills they want (`/plugin install truthful-coder@adamdroberts-skills`).
+2. **Plugin root === canonical skill folder**, not a separate `plugins/` directory. The `plugin.json` lives next to the existing `SKILL.md` and uses the special `skills: ["./"]` form documented in the [Claude Code plugins reference](https://code.claude.com/docs/en/plugins-reference) — that form means "the SKILL.md sits at the plugin root; load it directly". This avoids restructuring the canonical content into `skills/<name>/SKILL.md` subdirectories.
+
+When Claude Code installs a plugin, it copies the plugin's directory into `~/.claude/plugins/cache/<marketplace>/<plugin>/<sha>/`. Because the canonical folder *is* the plugin root, the entire skill (SKILL.md plus any sibling assets) is copied as a self-contained unit. There are no out-of-plugin symlinks to break.
+
+The marketplace name is `adamdroberts-skills`; the literal `agent-skills` is on Anthropic's reserved-names list.
+
+## Versioning
+
+No `version` field is set in either `marketplace.json` or the per-plugin `plugin.json`. Per the marketplace docs, this means Claude Code uses the **git commit SHA** as the version, so every commit on `main` is a new version and `/plugin marketplace update` will pull it. Pin a `version` string only when you want to control update timing explicitly.
+
+## What canonical means here
+
+The root skill folders are the *only* place skill content is edited. All other entries — `.claude/skills/<name>`, `.agents/skills/<name>`, the plugin manifests — point back at them. If your environment cannot follow symlinks, copy the canonical folder into place rather than editing a copy somewhere else.
+---
+
+# docs/contributing.md
+
+# Adding a new skill
+
+Use this checklist when you want to ship a new skill through every distribution channel this repo supports. The example uses a hypothetical skill named `my-skill`.
+
+## 1. Create the canonical folder
+
+```bash
+mkdir my-skill
+```
+
+Add `my-skill/SKILL.md` with valid frontmatter:
+
+```markdown
+---
+name: my-skill
+description: One-sentence trigger. Start with what to do, end with when to use it.
+---
+
+# My Skill
+
+Body of the skill goes here. Keep it operational and procedural, not aspirational.
+```
+
+The `name` field must match the folder name and is what the user types to invoke the skill. The `description` is what the agent reads to decide whether to load the skill, so make it precise.
+
+If the skill needs supporting files (reference docs, scripts, examples), put them as siblings of `SKILL.md` inside the same folder. They will be copied as part of the plugin.
+
+## 2. Wire each agent
+
+### Claude Code — project skill symlink
+
+```bash
+ln -s ../../my-skill .claude/skills/my-skill
+```
+
+### Codex symlink
+
+```bash
+ln -s ../../my-skill .agents/skills/my-skill
+```
+
+### Gemini CLI wrapper
+
+Create `.gemini/agents/my-skill.md` modeled on the existing wrappers:
+
+```markdown
+---
+name: my-skill
+description: <copy or rephrase the SKILL.md description>
+kind: local
+---
+
+You are the Gemini CLI compatibility wrapper for the `my-skill` Agent Skill in this repository.
+
+Gemini CLI does not natively load `SKILL.md` Agent Skills. Before doing the task, locate and read `my-skill/SKILL.md` from this repository or another included workspace directory. Treat that file as the source of truth for the workflow.
+
+If the root skill file is not available, report that the `my-skill/SKILL.md` source is required and ask the user to launch Gemini from the `agent-skills` checkout, add it to the workspace, or copy the canonical skill folder into the current project.
+
+Follow the skill exactly once loaded.
+```
+
+### Codex example config
+
+If users may want to enable/disable the skill from `~/.codex/config.toml`, append a snippet to `.codex/config.example.toml`:
+
+```toml
+[[skills.config]]
+path = "/path/to/agent-skills/.agents/skills/my-skill/SKILL.md"
+enabled = true
+```
+
+## 3. Publish to the Claude Code plugin marketplace
+
+### Add the per-plugin manifest
+
+Create `my-skill/.claude-plugin/plugin.json`:
+
+```json
+{
+  "name": "my-skill",
+  "description": "<same one-line summary as SKILL.md>",
+  "homepage": "https://github.com/adamdroberts/agent-skills",
+  "repository": "https://github.com/adamdroberts/agent-skills",
+  "license": "MIT",
+  "author": { "name": "Adam Roberts" },
+  "skills": ["./"]
+}
+```
+
+`"skills": ["./"]` is the magic line — it tells Claude Code that the SKILL.md is at the plugin root. The skill name comes from the SKILL.md frontmatter `name` field.
+
+### Add the marketplace entry
+
+Append to the `plugins` array in [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json):
+
+```json
+{
+  "name": "my-skill",
+  "source": "./my-skill",
+  "description": "<same one-line summary>",
+  "category": "<pick one>",
+  "keywords": ["…"],
+  "homepage": "https://github.com/adamdroberts/agent-skills",
+  "repository": "https://github.com/adamdroberts/agent-skills",
+  "license": "MIT",
+  "author": { "name": "Adam Roberts" }
+}
+```
+
+### Validate
+
+```bash
+claude plugin validate .
+```
+
+Resolve any errors before continuing.
+
+### Test locally
+
+```bash
+claude plugin marketplace add /path/to/agent-skills --scope local
+claude plugin install my-skill@adamdroberts-skills --scope local
+# verify the skill loads, then clean up
+claude plugin uninstall my-skill@adamdroberts-skills --scope local
+claude plugin marketplace remove adamdroberts-skills
+```
+
+## 4. Document the skill
+
+- Add a row for the new skill in the catalog table in [../README.md](README.md).
+- Add an entry under the agent support / project files in [README.md](README.md) and [docs/architecture.md](docs/architecture.md) if the layout changes.
+- Refresh [../llms.txt](llms.txt) and [../llms-full.txt](llms-full.txt) to mention the new skill.
+- Append a `CHANGELOG.md` entry that names the new skill, summarizes its purpose, and notes any user-visible install steps.
+
+## 5. Verify
+
+Final pre-commit checklist:
+
+- [ ] `SKILL.md` frontmatter has `name` (matching folder) and `description`.
+- [ ] All four adapters exist: `.claude/skills/<name>`, `.agents/skills/<name>`, `.gemini/agents/<name>.md`, `<name>/.claude-plugin/plugin.json`.
+- [ ] `marketplace.json` lists the plugin and `claude plugin validate .` passes.
+- [ ] README catalog table includes the new skill.
+- [ ] `llms.txt`, `llms-full.txt`, and `CHANGELOG.md` are updated.
+
+Commit, push, and the skill is installable remotely on the next `/plugin marketplace update adamdroberts-skills`.
+---
+
+# .claude/README.md
+
+# Claude Code Skill Setup
+
+This directory makes the root Agent Skills available to Claude Code as project skills.
+
+Claude Code discovers project skills from:
+
+- `.claude/skills/<skill-name>/SKILL.md` in the current project.
+- `~/.claude/skills/<skill-name>/SKILL.md` for personal skills.
+- `.claude/skills/` inside a directory passed with `--add-dir`.
+
+The entries in `.claude/skills/` are symlinks to the canonical root skill folders:
+
+- `deep-documentation`
+- `truthful-coder`
+
+To use this repository as a shared skill source from another project:
+
+```bash
+claude --add-dir /path/to/agent-skills
+```
+
+If your environment does not preserve symlinks, copy the root skill folder into `.claude/skills/<skill-name>/` or `~/.claude/skills/<skill-name>/`.
+---
+
+# deep-documentation/SKILL.md
+
+---
+name: deep-documentation
+description: >-
+  Create, expand, reorganize, and maintain repository documentation with deep
+  coverage across README files, browsable docs, API/reference pages, llms.txt,
+  llms-full.txt, changelogs, and repo-local agent skills. Use whenever the
+  user asks for comprehensive project documentation, documentation refreshes,
+  LLM-friendly docs, documentation synchronization after code changes, or
+  agent guidance that teaches future LLMs how to use the project docs.
+---
+
+# Deep Documentation
+
+Use this skill when the task is to produce or maintain serious repository documentation, not a light README pass. The target quality bar is a repo where humans and LLMs can both understand how to use the system, what changed, and where to find the exact surface they need.
+
+Documentation is part of delivery. If the code, API, setup, workflow, or behavior changes, the docs change in the same task.
+
+## Core rules
+
+- Ground everything in the real repo. Read code, config, routes, schemas, tests, and existing docs before writing.
+- Do not write vague marketing prose. Write operational, exact documentation.
+- Keep the documentation layered: overview for orientation, guides for workflows, reference for exact interfaces, internals for maintainers.
+- Use Mermaid diagrams in architectural documentation and anywhere business logic, workflow, or system behavior is easier to understand visually.
+- Treat LLM-facing documentation as first-class project artifacts, not an afterthought.
+- Treat changelog updates as required for meaningful changes.
+- Create or update repo-local agent skills when the repo has distinct workflows or tool surfaces that future LLMs should follow.
+
+## Documentation standard
+
+Documentation at this level should usually include most or all of these surfaces:
+
+- `README.md` for the current product story, setup, quickstart, and top-level links.
+- `docs/README.md` or equivalent index that maps the full documentation set.
+- Guide pages for how to build, use, run, or operate the system.
+- Reference pages for public APIs, endpoints, tools, config fields, schema shapes, environment variables, and commands.
+- Internal architecture or subsystem pages for maintainers.
+- Testing or verification docs when the repo has a meaningful test surface.
+- Agent-skills documentation when the project wants LLMs to use the codebase in a specific way.
+- `llms.txt` as the concise LLM index.
+- `llms-full.txt` as the single-file documentation bundle for ingestion.
+- `CHANGELOG.md` as the append-only historical record.
+
+For architecture docs and business-logic-heavy workflows, include Mermaid charts that make the structure or execution flow explicit. Prefer diagrams for request lifecycles, service boundaries, state transitions, data flow, training or job pipelines, and multi-step business rules.
+
+For large repos, mirror the codebase structure in the docs. If the repo has separate SDK, API, CLI, editor, server, or MCP/tooling surfaces, document them separately and index them together.
+
+## How to work
+
+### 1. Map the repo before writing
+
+Inspect:
+
+- top-level entrypoints and package manifests
+- source directories and subsystem boundaries
+- routers, handlers, schemas, models, settings, config types
+- tests that define expected behavior
+- existing docs, changelog, and LLM artifacts
+- existing repo-local skills such as `.cursor/skills/`, `.codex/skills/`, or similar
+
+Build a documentation map before editing:
+
+- what the product is
+- who uses each surface
+- which files define public behavior
+- which docs already exist
+- which docs are stale or missing
+
+Do not ask the user questions that the repo can answer.
+
+### 2. Write layered docs, not one giant summary
+
+Use layers with distinct jobs:
+
+- Overview docs explain what exists and where to go next.
+- Guide docs explain how to accomplish real tasks end to end.
+- Reference docs enumerate exact interfaces and shapes.
+- Internal docs explain architecture, data flow, persistence, background jobs, routing, or editor/store/service internals.
+
+When documenting architecture or business logic, include Mermaid diagrams alongside prose. Use them to show the actual structure or flow, not as decorative summaries.
+
+Cross-link aggressively with relative markdown links so a reader can move between overview, guide, and reference pages.
+
+### 3. Document exact surfaces
+
+When documenting a public surface, include the real details from code:
+
+- Python or library APIs: classes, functions, methods, dataclasses, fields, defaults, and important return values
+- HTTP APIs: method, path, auth requirements, request shape, response shape, error behavior
+- MCP or tool APIs: tool name, parameters, purpose, workflow position, and common call patterns
+- CLI or scripts: command, required flags, outputs, and prerequisites
+- Settings: environment variable, default, purpose, and operational impact
+- Frontend or editor systems: page/route structure, state containers, API client contracts, component responsibilities
+
+If the repo exposes many public symbols, prefer one reference page per subsystem instead of dumping everything into one page.
+
+### 4. Include runnable and navigable examples
+
+Where useful, include:
+
+- short runnable code examples
+- realistic request and response samples
+- command sequences for setup and startup
+- workflow examples that connect multiple pages or subsystems
+- Mermaid flowcharts, sequence diagrams, or graph diagrams for business logic and architecture
+
+Examples should clarify usage, not pad the page.
+
+## Required artifacts
+
+### `README.md`
+
+Keep the top-level README current with:
+
+- what the project is now
+- current status or stability notes if relevant
+- installation and startup basics
+- top-level workflow or quickstart
+- links to the full documentation set
+- links to `llms.txt`, `llms-full.txt`, and agent-skills docs when those artifacts exist
+
+Do not leave the README as a stale launch announcement once the product has grown.
+
+### `docs/` index and section pages
+
+The docs index should describe the documentation set and route the reader by need, not just by folder name.
+
+Good patterns:
+
+- “Getting started”
+- “Architecture”
+- “Framework guide” or “How-to guides”
+- “API reference”
+- “Tool reference”
+- “Server internals”
+- “Frontend/editor reference”
+- “Testing”
+- “Agent skills”
+
+Each entry should say what the page covers.
+
+### `llms.txt`
+
+`llms.txt` is the concise LLM-oriented index. It should:
+
+- explain the project in a compact way
+- point to the major documentation sections
+- help an LLM find the right page quickly
+- include links to important guides, references, and agent-skills docs
+- point to `llms-full.txt` as the full ingestion artifact
+
+Do not make `llms.txt` a copy of the README. It is an index for machine readers.
+
+### `llms-full.txt`
+
+`llms-full.txt` is the single-file documentation bundle for ingestion. It should:
+
+- contain or aggregate the canonical docs in one place
+- follow a stable, readable order
+- include enough context that an LLM can answer questions without re-traversing the full tree
+- reflect current docs, not an older snapshot
+
+If the repo has a documented generator or build step for `llms-full.txt`, use it. If not, treat `llms-full.txt` as a maintained artifact and update it directly whenever the underlying docs change enough to make it stale.
+
+Do not leave `llms.txt` and `llms-full.txt` out of sync with the browsable docs.
+
+## Automatic documentation updating
+
+Documentation updates are mandatory in the same task whenever changes affect:
+
+- user-facing behavior or workflows
+- setup, install, run, or deployment instructions
+- configuration or environment variables
+- authentication, routing, persistence, background jobs, dataset handling, training, or operational flow
+- public library APIs
+- REST, RPC, CLI, MCP, or tool interfaces
+- agent workflows that depend on repo-specific instructions
+
+A meaningful code change is not complete until the relevant documentation is updated.
+
+Map changed code to changed docs explicitly:
+
+- library/package changes -> matching API reference and any affected guide pages
+- endpoint changes -> matching API docs
+- tool changes -> matching tool docs and repo-local skills
+- config changes -> setup/configuration docs and README if user-visible
+- workflow changes -> getting-started or operational guides
+- internal architecture changes -> internals docs if maintainers need the new model
+
+Do not hide doc work in a vague “updated docs” line. Update the exact pages that correspond to the changed surface.
+
+## Changelog rules
+
+Maintain an append-only `CHANGELOG.md`.
+
+For meaningful changes, append an entry that includes:
+
+- date or release grouping, following repo convention
+- what changed
+- why it matters
+- migration notes or compatibility notes when relevant
+- verification performed
+
+For breaking changes, add a clearly labeled breaking-change note that says:
+
+- what the old behavior or interface was
+- what it is now
+- who is affected
+- what callers, users, or agents must update
+
+Prefer useful changelog entries over terse release notes. The changelog should help a maintainer or agent understand the historical evolution of the repo.
+
+## Agent skills for documentation use
+
+When the repo has distinct subsystems or workflows, create or update repo-local agent skills so future LLMs can use the documentation correctly and stay on the intended path.
+
+Typical skill split:
+
+- core SDK or library usage
+- API or MCP/tool usage
+- model-building or training workflows
+- deployment or operations workflows
+- frontend/editor workflows if they are substantial
+
+Agent skills should:
+
+- stay concise and procedural
+- trigger on real user intents
+- point back to canonical docs instead of duplicating everything
+- link to the docs index and `llms-full.txt`
+- explain when to use the skill and when not to use it
+- include high-signal examples or quick-reference tables only where they materially improve execution
+
+If the repo exposes multiple skills, maintain an index page describing:
+
+- each skill name
+- where it lives
+- what it should trigger on
+- which documentation pages it summarizes or depends on
+
+Do not create giant skills that try to replace the full docs. Skills should route agents into the docs, encode repo-specific workflow rules, and keep context efficient.
+
+## Recommended workflow
+
+Use this sequence:
+
+1. Inspect the current repo and docs.
+2. Identify the code-defined surfaces that need documentation.
+3. Update `README.md` and the browsable docs.
+4. Update or create the matching reference and workflow pages.
+5. Sync `llms.txt`.
+6. Sync `llms-full.txt`.
+7. Append the changelog entry.
+8. Create or update repo-local agent skills and any agent-skills index page.
+9. Verify links, page coverage, terminology consistency, and examples against code.
+
+## Quality bar
+
+Aim for documentation that lets a reader answer these questions quickly:
+
+- What is this project?
+- How do I install and run it today?
+- Which docs page covers my task?
+- What are the exact public APIs, endpoints, tools, or config keys?
+- What changed recently?
+- If I am an LLM agent, which skill should I use and which docs should I trust?
+
+If those answers are not available without digging through source code, the docs are not deep enough yet.
+
+## Done criteria
+
+Do not consider the task complete until all of the following are true:
+
+- the top-level docs and detailed docs agree with the current implementation
+- `llms.txt` points to the right places
+- `llms-full.txt` is current
+- the changelog records the meaningful change
+- repo-local agent skills are created or updated when needed
+- no page obviously contradicts code, config, routes, schemas, or tests
+
+## Avoid
+
+- vague summaries that omit the exact interface
+- stale README files that no longer match the product
+- updating docs without syncing LLM artifacts
+- updating APIs or tools without updating agent skills
+- rewriting changelog history instead of appending
+- inventing behavior not confirmed by code
+---
+
+# truthful-coder/SKILL.md
+
+---
+name: truthful-coder
+description: Enforces strict change transparency. Use when editing code, notebooks, configs, or running commands so every change is disclosed, including changes not announced in advance.
+---
+
+# Truthful Coder
+
+Behavioral guardrails for complete transparency about repository and environment changes.
+
+## Core Rule
+
+Never leave hidden changes undisclosed. If anything changed that was not previously communicated, report it explicitly in the next user-facing message.
+
+## Required Workflow
+
+1. **Announce intent before edits**
+   - Briefly state which files or areas you expect to change.
+2. **Track actual changes**
+   - After edits/commands, verify what actually changed (including generated files and auto-modified files).
+3. **Disclose all deltas**
+   - If any extra changes occurred beyond what you announced, list them explicitly with a short cause.
+4. **Handle unexpected external changes**
+   - If files changed unexpectedly and not by your action, stop and ask the user how to proceed.
+5. **Use a transparency section in major updates**
+   - Include:
+     - `Planned changes made`
+     - `Unplanned changes disclosed` (or `none`)
+
+## What Must Be Disclosed
+
+- Any file content edits outside the announced scope.
+- Auto-format or lint changes made by tools/hooks.
+- New, deleted, or renamed files not previously mentioned.
+- Lockfile, metadata, checkpoint, cache, or notebook structural changes.
+- Environment-affecting actions (dependency install, migrations, generated artifacts).
+- Give a brief explaination for any new variables added and their purpose.
+
+## Disclosure Format
+
+Use concise bullets:
+
+- `<path or system state>`: `<what changed>` (`<reason or trigger>`)
+
+If reason is unknown, state that clearly.
+
+## Never Do
+
+- Do not omit "small" or "incidental" changes.
+- Do not say "no other changes" without checking.
+- Do not continue silently after discovering unexpected changes.
